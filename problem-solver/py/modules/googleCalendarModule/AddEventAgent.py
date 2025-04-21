@@ -13,7 +13,6 @@ from sc_kpm.utils import (
     get_link_content_data,
     check_connector,
     search_element_by_role_relation,
-    generate_link
 )
 from sc_kpm.utils.action_utils import (
     generate_action_result,
@@ -25,12 +24,8 @@ from sc_kpm.utils.action_utils import (
 from sc_kpm import ScKeynodes
 
 import requests
-import os
 import datetime
-import re
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
-CREDENTIALS_FILE = 'modules/googleCalendarModule/credentials.json'
 calendar_id = "primary"
 
 logging.basicConfig(

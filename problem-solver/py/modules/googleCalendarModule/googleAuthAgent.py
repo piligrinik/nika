@@ -1,6 +1,5 @@
 import json
 import logging
-from sc_client.constants import sc_type
 from sc_kpm import ScAgentClassic, ScResult
 from google.oauth2.credentials import Credentials
 from sc_client.models import ScAddr, ScLinkContent, ScLinkContentType
@@ -41,6 +40,7 @@ class GoogleAuthAgent(ScAgentClassic):
         
         if nrel_google_access_token and current_user_node:
             self.logger.info("Found necessary auth nodes")
+            self.logger.info(f"{access_token_link=}")
             creds_dict = json.loads(get_link_content_data(access_token_link))
             creds = Credentials.from_authorized_user_info(creds_dict)
             
