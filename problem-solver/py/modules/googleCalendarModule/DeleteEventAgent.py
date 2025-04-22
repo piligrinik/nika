@@ -58,7 +58,7 @@ class DeleteEventAgent(ScAgentClassic):
 
             if not check_connector(sc_type.VAR_PERM_POS_ARC, message_type, message_addr):
                 self.logger.info(
-                    f"The message isn’t about adding calendar event")
+                    f"The message isn’t about deleting calendar event")
                 return ScResult.OK
 
             rrel_event_summary = ScKeynodes.resolve("rrel_event_summary", sc_type.CONST_NODE_ROLE)
@@ -70,16 +70,16 @@ class DeleteEventAgent(ScAgentClassic):
 
             event = self.search_event(headers, summary_content)
             if event == ScResult.ERROR:
-                self.logger.info("DeleteEventAgent: event hasn't been found in Google Calendar")
+                self.logger.info("Event hasn't been found in Google Calendar")
                 return ScResult.ERROR
-            self.logger.info(f"found event: {event['summary']}")
+            self.logger.info(f"Found event: {event['summary']}")
             deletion_response = self.delete_event(headers, event['id'])
             if not deletion_response:
-                self.logger.info("DeleteEventAgent: event hasn't been deleted in Google Calendar")
+                self.logger.info("Event hasn't been deleted in Google Calendar")
                 return ScResult.ERROR
             self.logger.info("Event was deleted")
         except Exception as e:
-            self.logger.info(f"DeleteEventAgent: finished with an error {e}")
+            self.logger.info(f"Finished with an error {e}")
             return ScResult.ERROR
         summary_addr = search_element_by_role_relation(message_addr, rrel_event_summary)
         generate_action_result(action_node, summary_addr)
@@ -112,10 +112,10 @@ class DeleteEventAgent(ScAgentClassic):
             if response.status_code == 200:
                 return response.json()['items'][0]
             else:
-                self.logger.info(f"DeleteEventAgent: Search error: {response.status_code} - {response.text}")
+                self.logger.info(f"Search error: {response.status_code} - {response.text}")
                 return ScResult.ERROR
         except requests.exceptions.ConnectionError:
-            self.logger.info(f"DeleteEventAgent: finished with connection error")
+            self.logger.info(f"Finished with connection error")
             return ScResult.ERROR
 
     def delete_event(self, headers, event_id):
@@ -130,9 +130,9 @@ class DeleteEventAgent(ScAgentClassic):
             if response.status_code == 204:
                 return True
             else:
-                raise Exception(f"DeleteEventAgent: Delete error: {response.status_code} - {response.text}")
+                raise Exception(f"Deletion error: {response.status_code} - {response.text}")
         except requests.exceptions.ConnectionError:
-            self.logger.info(f"DeleteEventAgent: finished with connection error")
+            self.logger.info(f"Finished with connection error")
             return ScResult.ERROR
 
     def get_authenticated_token(self) -> str | None:
