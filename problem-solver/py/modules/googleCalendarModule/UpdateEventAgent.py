@@ -31,7 +31,7 @@ logging.basicConfig(
 )
 
 
-class DeleteEventAgent(ScAgentClassic):
+class UpdateEventAgent(ScAgentClassic):
     def __init__(self):
         super().__init__("action_update_calendar_event")
 
