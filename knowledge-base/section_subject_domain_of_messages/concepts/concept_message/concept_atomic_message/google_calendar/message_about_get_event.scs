@@ -1,0 +1,36 @@
+concept_get_calendar_event_message
+<- sc_node_class;
+=> nrel_main_idtf:
+	[сообщение о получении событий из календаря]
+	    (* <- lang_ru;; *);
+	[message about obtaining calendar event]
+	    (* <- lang_en;; *);
+=> nrel_wit_ai_idtf:
+	[get_events];
+<- rrel_key_sc_element:
+	...
+	(*
+	=> nrel_main_idtf:
+	    [Опр. (сообщение о получении событий из календаря)]
+	        (* <- lang_ru;; *);
+	    [Def. (message about obtaining calendar event)]
+	        (* <- lang_en;; *);;
+	<- definition;;
+	<= nrel_sc_text_translation:
+		...
+		(*
+		-> rrel_example:
+			[Сообщение о получении событий из календаря - запрос на получение событий из календаря]
+			    (* <- lang_ru;; *);;
+		*);
+		...
+		(*
+		-> rrel_example: 
+			[Message about successful obtaining calendar event is an atomic message of a request to get the event from calendar]
+			    (* <- lang_en;; *);;
+		*);;
+	<= nrel_using_constants:
+		{
+			concept_atomic_message
+		};;		
+	*);;

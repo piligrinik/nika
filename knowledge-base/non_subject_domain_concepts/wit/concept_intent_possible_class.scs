@@ -40,4 +40,5 @@ concept_intent_possible_class
 -> concept_update_calendar_event_message;
 -> concept_delete_calendar_event_message;
 -> concept_get_calendar_event_message;
--> concept_add_calendar_event_message;;
+-> concept_add_calendar_event_message;
+-> concept_get_calendar_event_message;;
