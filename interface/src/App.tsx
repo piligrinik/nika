@@ -13,6 +13,7 @@ const { Header, Content, Footer } = Layout;
 
 import { HeaderPanel } from "@components/Header";
 import { FooterPanel } from "@components/Footer";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const Demo = loadingComponent(lazy(() => import('@pages/Demo')));
 const About = loadingComponent(lazy(() => import('@pages/About')));
@@ -106,17 +107,19 @@ export const App = () => {
         };
 
     return (
-        <Layout>
-            <Header style={ headerStyles }>
-                <HeaderPanel />
-            </Header>
-            <Content style={ mainStyles }>
-                <DemoRoutes />
-                <AboutRoutes />
-            </Content>
-            <Footer style={ footerStyles }>
-                <FooterPanel />
-            </Footer>
-        </Layout>
+        <GoogleOAuthProvider clientId={String(process.env.GOOGLE_CLIENT_ID)}>
+            <Layout>
+                <Header style={headerStyles}>
+                    <HeaderPanel />
+                </Header>
+                <Content style={mainStyles}>
+                    <DemoRoutes />
+                    <AboutRoutes />
+                </Content>
+                <Footer style={footerStyles}>
+                    <FooterPanel />
+                </Footer>
+            </Layout>
+        </GoogleOAuthProvider>
     );
 };

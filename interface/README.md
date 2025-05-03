@@ -10,6 +10,9 @@ yarn
 
 ### Run for development
 ```sh
+# Install all dependencies
+yarn install
+
 # Start webpack dev server
 yarn start
 
