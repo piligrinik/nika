@@ -474,3 +474,23 @@ html, body, .backdrop {
         border-radius: calc(var(--max-size) / 2);
     }
 }
+
+.google-login-button {
+    background-color: #4285F4; /* Синий цвет Google */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.google-login-button svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}

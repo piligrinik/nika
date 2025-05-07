@@ -1,5 +1,7 @@
 import { useGoogleLogin, CodeResponse } from '@react-oauth/google';
 import { create_current_user } from '@api/sc/agents/googleAuthAgent';
+import { ReactComponent as GoogleIcon } from '@assets/icon/google.svg';
+
 
 const Login: React.FC = () => {
     const login = useGoogleLogin({
@@ -56,7 +58,10 @@ const Login: React.FC = () => {
 
     return (
         <div>
-            <button onClick={() => login()}>Войти через Google</button>
+            <button className="google-login-button" onClick={() => login()}>
+                <GoogleIcon />
+                Войти через Google
+            </button>
         </div>
     );
 };
