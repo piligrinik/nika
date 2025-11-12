@@ -38,73 +38,126 @@ load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 os.environ["GOOGLE_API_KEY"] = gemini_api_key
 
-
-json_about_entity = {
-    "title": "Question about an entity",
-    "description": "A question about an entity, its name, definition and the answer in human format.",
-    "type": "object",
-    "properties": {
-        "question": {
-            "type": "string",
-            "description": "The question about the definition of the entity, will always be mentioned in human question."
-        },
-        "entity": {
-            "type": "string",
-            "description": "Entity that the question is about."
-        },
-        "question_type": {
-            "type": "string",
-            "description": "Type of the question. Ex: about_entity, about_weather."
-        },
-        "nrel_main_idtf": {
-            "type": "string",
-            "description": "Identifier of the entity in the initial form (with a capital letter)."
-        },
-        "definition": {
-            "type": "string",
-            "description": "A definition of the entity without mentioning the entity itself."
-        },
-        "answer": {
-            "type": "string",
-            "description": "An answer to human question in a natural language."
-        }
-    },
-    "required": ["question", "entity", "nrel_main_idtf", "definition", "answer"]
-}
-
-llm = init_chat_model("google_genai:gemini-2.5-flash-lite")
-
-model_with_structure = llm.with_structured_output(
-    json_about_entity,
-    method="json_schema",
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s | %(name)s | %(message)s", datefmt="[%d-%b-%y %H:%M:%S]"
 )
-json_input = {
-        "question": "Что такое апельсин?",
-        "entity": "апельсин",
-        "question_type": "about_entity",
-        "nrel_main_idtf": "Апельсин",
-        "definition": None,
-        "answer": None
-        }
-# response = model_with_structure.invoke(f"""Please complite provided JSON, don't change the fields that are not None: \n 
-        # {json_input}""")
 
-# json_output = json.dumps(response, ensure_ascii=False, indent=2)
-# json_output = response
-json_output = {
-  "question": "Что такое апельсин?",
-  "entity": "aпельсин",
-  "nrel_main_idtf": "Апельсин",
-  "definition": "Плод апельсинового дерева.",
-  "answer": "Апельсин — это плод апельсинового дерева.",
-  "question_type": "about_entity"
-}
-diff = {}
-if json_output.keys() == json_input.keys():
-    for v1, v2 in zip(sorted(json_input.items()), sorted(json_output.items())):
-        if v1 != v2:
-            print(f"Different field: {v1} and {v2}")
-            diff[v1[0]] = v2[1]
+
+# TODO: add_to_kb method
+
+
+class LLMAgent(ScAgentClassic):
+    def __init__(self):
+        super().__init__("action_get_llm_answer")
+
+    def on_event(self, event_element: ScAddr, event_edge: ScAddr, action_element: ScAddr) -> ScResult:
+        result = self.run(action_element)
+        is_successful = result == ScResult.OK
+        finish_action_with_status(action_element, is_successful)
+        self.logger.info("WeatherAgent finished %s",
+                         "successfully" if is_successful else "unsuccessfully")
+        return result
+    
+    def run(self, action_node: ScAddr) -> ScResult:
+        self.logger.info("WeatherAgent started")
+        try:
+            message_addr = get_action_arguments(action_node, 1)[0]
+            
+            # message_type = ScKeynodes.resolve(
+            #     "concept_message_about_weather", sc_types.NODE_CONST_CLASS)
+
+            # if not check_edge(sc_types.EDGE_ACCESS_VAR_POS_PERM, message_type, message_addr):
+            #     self.logger.info(
+            #         f"WeatherAgent: the message isn’t about weather")
+            #     return ScResult.OK
+
+            rrel_entity = ScKeynodes.resolve("rrel_entity", sc_types.NODE_ROLE)
+            entity_addr = ScAddr(0) # TODO: take Alice's code here (search for entity address)
+            # at this point i will have addresses: entity
+
+            json_input = {
+                "question": "Что такое апельсин?",
+                "entity": "orange",
+                "question_type": "about_entity",
+                "nrel_main_idtf": "Апельсин",
+                "definition": None,
+                "answer": None
+                }
+            json_about_entity = {
+                "title": "Question about an entity",
+                "description": "A question about an entity, its name, definition and the answer in human format.",
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "description": "The question about the definition of the entity, will always be mentioned in human question."
+                    },
+                    "entity": {
+                        "type": "string",
+                        "description": "Entity that the question is about."
+                    },
+                    "question_type": {
+                        "type": "string",
+                        "description": "Type of the question. Ex: about_entity, about_weather."
+                    },
+                    "nrel_main_idtf": {
+                        "type": "string",
+                        "description": "Identifier of the entity in the initial form (with a capital letter)."
+                    },
+                    "definition": {
+                        "type": "string",
+                        "description": "A definition of the entity without mentioning the entity itself."
+                    },
+                    "answer": {
+                        "type": "string",
+                        "description": "An answer to human question in a natural language."
+                    }
+                },
+                "required": ["question", "entity", "nrel_main_idtf", "definition", "answer"]
+            }
+            json_output = self.get_llm_answer(json_template=json_about_entity, json_input=json_input)
+        except:
+            self.logger.info(f"LLMAgent: finished with an error")
+            return ScResult.ERROR
+        
+    def get_llm_answer(self, json_template: dict, json_input: dict):
+# TODO: add parameters 
+# TODO: adopt dynamic json
+# TODO: llm_json_template_to_kb
+
+        llm = init_chat_model("google_genai:gemini-2.5-flash-lite")
+
+        model_with_structure = llm.with_structured_output(
+            json_template,
+            method="json_schema",
+        )
+        
+        response = model_with_structure.invoke(f"""Please complite provided JSON, don't change the fields that are not None: \n 
+                # {json_input}""")
+        return response
+    
+    def add_new_params_to_kb(self, new_params: dict, entity_addr: ScAddr):
+        pass
+
+    def find_new_params(self, json_input: dict, json_output: dict):
+        # json_output = json.dumps(response, ensure_ascii=False, indent=2)
+        # json_output = response
+        json_output = {
+        "question": "Что такое апельсин?",
+        "entity": "orange",
+        "nrel_main_idtf": "Апельсин",
+        "definition": "Плод апельсинового дерева.",
+        "answer": "Апельсин — это плод апельсинового дерева.",
+        "question_type": "about_entity"
+        }
+        diff = {}
+        if json_output.keys() == json_input.keys():
+            for v1, v2 in zip(sorted(json_input.items()), sorted(json_output.items())):
+                if v1 != v2:
+                    print(f"Different field: {v1} and {v2}")
+                    diff[v1[0]] = v2[1]
+        return diff
+
 
 
 
