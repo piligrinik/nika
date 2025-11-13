@@ -1,7 +1,9 @@
 import logging
 from sc_client.models import ScAddr, ScLinkContentType, ScTemplate
-from sc_client.constants import sc_types
+from sc_client.constants import sc_type
 from sc_client.client import template_search
+
+from sc_kpm.identifiers import CommonIdentifiers
 
 from sc_kpm import ScAgentClassic, ScModule, ScResult, ScServer
 from sc_kpm.sc_sets import ScSet
@@ -14,7 +16,10 @@ from sc_kpm.utils import (
     get_element_by_norole_relation,
     get_system_idtf,
     get_edge,
-    create_role_relation
+    generate_link,
+    generate_links,
+    generate_non_role_relation,
+    generate_node
 )
 from sc_kpm.utils.action_utils import (
     generate_action_result,
@@ -104,7 +109,7 @@ class LLMAgent(ScAgentClassic):
                         "type": "string",
                         "description": "Identifier of the entity in the initial form (with a capital letter)."
                     },
-                    "definition": {
+                    "nrel_def": {
                         "type": "string",
                         "description": "A definition of the entity without mentioning the entity itself."
                     },
@@ -116,6 +121,7 @@ class LLMAgent(ScAgentClassic):
                 "required": ["question", "entity", "nrel_main_idtf", "definition", "answer"]
             }
             json_output = self.get_llm_answer(json_template=json_about_entity, json_input=json_input)
+            diff_params = self.find_new_params(json_input, json_output)
         except:
             self.logger.info(f"LLMAgent: finished with an error")
             return ScResult.ERROR
@@ -136,9 +142,6 @@ class LLMAgent(ScAgentClassic):
                 # {json_input}""")
         return response
     
-    def add_new_params_to_kb(self, new_params: dict, entity_addr: ScAddr):
-        pass
-
     def find_new_params(self, json_input: dict, json_output: dict):
         # json_output = json.dumps(response, ensure_ascii=False, indent=2)
         # json_output = response
@@ -157,10 +160,17 @@ class LLMAgent(ScAgentClassic):
                     print(f"Different field: {v1} and {v2}")
                     diff[v1[0]] = v2[1]
         return diff
+    
+    def add_new_params_to_kb(self, new_params: dict, entity_addr: ScAddr):
 
+        new_links = generate_links(new_params.values())
+        for link, key in zip(new_links, new_params.keys()):
+            nrel = generate_non_role_relation(entity_addr, link, generate_node(sc_type.CONST_NODE_NON_ROLE, key))
 
-
-
+    def add_answer_to_result(self, entity_addr: ScAddr):
+        nrel_reply_node = ScKeynodes.resolve("nrel_reply", None)
+        text_translation_node = ScKeynodes.resolve("nrel_sc_text_translation", None)
+        
 
 if __name__ == "__main__":
     print(diff)
