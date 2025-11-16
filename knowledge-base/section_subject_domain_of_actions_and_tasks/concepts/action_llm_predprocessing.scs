@@ -1,0 +1,9 @@
+action_llm_predprocessing
+<- sc_node_class;
+=> nrel_main_idtf:
+	[действие. предобработка сообщения перед вызовом LLM](* <- lang_ru;; *);
+	[action. message predprocessing before LLM call](* <- lang_en;; *);
+<- actions_class;
+<- atomic_action_class;
+<= nrel_inclusion: information_action;;
+
