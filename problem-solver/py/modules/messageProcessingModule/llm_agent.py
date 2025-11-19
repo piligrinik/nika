@@ -1,7 +1,7 @@
 import logging
 from sc_client.models import ScAddr, ScLinkContentType, ScTemplate
 from sc_client.constants import sc_type
-from sc_client.client import template_search
+from sc_client.client import search_by_template, generate_by_template
 
 from sc_kpm.identifiers import CommonIdentifiers
 
@@ -76,7 +76,7 @@ class LLMAgent(ScAgentClassic):
             #         f"WeatherAgent: the message isn’t about weather")
             #     return ScResult.OK
 
-            rrel_entity = ScKeynodes.resolve("rrel_entity", sc_types.NODE_ROLE)
+            rrel_entity = ScKeynodes.resolve("rrel_entity", sc_type.NODE_ROLE)
             entity_addr = ScAddr(0) # TODO: take Alice's code here (search for entity address)
             # at this point i will have addresses: entity
 
@@ -167,11 +167,49 @@ class LLMAgent(ScAgentClassic):
         for link, key in zip(new_links, new_params.keys()):
             nrel = generate_non_role_relation(entity_addr, link, generate_node(sc_type.CONST_NODE_NON_ROLE, key))
 
-    def add_answer_to_result(self, entity_addr: ScAddr):
+    def add_answer_to_result(self, message_addr: ScAddr, answer_text: str):
+        # generate answer link
+        answer_link = generate_link(answer_text, ScLinkContentType.STRING, sc_type.CONST_NODE_LINK)
+        answer_link_node = generate_node(sc_type.NODE)
+        # resolve or create all necessary nodes 
         nrel_reply_node = ScKeynodes.resolve("nrel_reply", None)
-        text_translation_node = ScKeynodes.resolve("nrel_sc_text_translation", None)
+        text_translation_node = ScKeynodes.resolve("nrel_sc_text_translation", sc_type.CONST_NODE_NON_ROLE)
+        reply_message_node = ScKeynodes.resolve("reply_message", sc_type.NODE)
+        
+        answer_template = ScTemplate()
+        answer_template.triple(
+            sc_type.VAR_NODE >> "_link_node",
+            sc_type.VAR_TEMP_POS_ARC,
+            sc_type.VAR_NODE_LINK >> "_link"
+
+        )
+        answer_template.quintuple(
+            "_link_node",
+            sc_type.VAR_COMMON_ARC,
+            sc_type.VAR_NODE >> "_reply_node",
+            sc_type.VAR_PERM_POS_ARC,
+            sc_type.VAR_NODE_NON_ROLE >> "_nrel_sc_text_translation"
+        )
+        answer_template.quintuple(
+            message_addr,
+            sc_type.VAR_COMMON_ARC,
+            "_reply_node",
+            sc_type.VAR_TEMP_POS_ARC,
+            sc_type.VAR_NODE_NON_ROLE >> "_nrel_reply"
+        )
+        
+        params = {"_link": answer_link,
+                  "_link_node": answer_link_node,
+                  "_reply_node": reply_message_node,
+                  "_nrel_reply": nrel_reply_node,
+                  "_nrel_sc_text_translation": text_translation_node}
+        search_results = generate_by_template(answer_template, params)
+        
+
+
+
         
 
 if __name__ == "__main__":
-    print(diff)
+    ...
 
