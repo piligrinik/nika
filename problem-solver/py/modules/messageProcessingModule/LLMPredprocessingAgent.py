@@ -181,6 +181,8 @@ class LLMPredprocessingAgent(ScAgentClassic):
             input_json=get_link_content_data(input_json_node)# получаем из узла джейсончик номер раз в виде строки
             input_json_dict=self.str_to_dict(input_json) # преобразуем его в словарь
             prompt_json=get_link_content_data(prompt_json_node) #!!!!!!!!!!!!!!!!!!!!!! ПРОМТОВЫЙ  ДЖЕЙСОН В СТРОКОВОМ ВИДЕ
+            prompt_json = prompt_json.replace("(", "[")
+            prompt_json = prompt_json.replace(")", "]")
             #---------------CHECK----------------------------------------------------------
             self.logger.info('CHECK POINT №2')
             self.logger.info(input_json)
