@@ -272,7 +272,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             generate_action_result(action_node, reply_node)
             return ScResult.OK
         except Exception as e:
-            self.logger.info(f"LLMPredprocessingAgent: finished with an error: {e}")
+            self.logger.exception(f"LLMPredprocessingAgent: finished with an error: {e}")
             return ScResult.ERROR
     
     def str_to_dict(self,input_str):
