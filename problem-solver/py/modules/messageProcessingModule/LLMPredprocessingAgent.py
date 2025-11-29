@@ -52,7 +52,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
         finish_action_with_status(action_element, is_successful)
         self.logger.info("LLMPredprocessingAgent finished %s",
                          "successfully" if is_successful else "unsuccessfully")
-        return result
+        return ScResult.OK
 
 
     def run(self, action_node: ScAddr) -> ScResult:
