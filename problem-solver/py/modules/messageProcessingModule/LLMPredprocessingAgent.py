@@ -150,7 +150,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_llm_templates_temp.quintuple(
                 _tuple_node,
                 sc_type.VAR_PERM_POS_ARC,
-                _entity_template,
+                sc_type.VAR_NODE_STRUCTURE >> _entity_template,
                 sc_type.VAR_PERM_POS_ARC,
                 rrel_entity_template,
             )
@@ -158,7 +158,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_llm_templates_temp.quintuple(
                 _tuple_node,
                 sc_type.VAR_PERM_POS_ARC,
-                _prompt_json,
+                sc_type.VAR_NODE_LINK >> _prompt_json,
                 sc_type.VAR_PERM_POS_ARC,
                 rrel_prompt_json,
             )
@@ -166,7 +166,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_llm_templates_temp.quintuple(
                 _tuple_node,
                 sc_type.VAR_PERM_POS_ARC,
-                _input_json,
+                sc_type.VAR_NODE_LINK >>  _input_json,
                 sc_type.VAR_PERM_POS_ARC,
                 rrel_input_json,
             )
