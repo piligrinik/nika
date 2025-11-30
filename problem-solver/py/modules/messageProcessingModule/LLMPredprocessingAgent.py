@@ -3,7 +3,7 @@ import re
 import logging
 from sc_client.models import ScAddr, ScLinkContentType, ScTemplate
 from sc_client.constants import sc_type
-from sc_client.client import search_by_template,generate_by_template
+from sc_client.client import search_by_template,generate_by_template, get_elements_types
 
 from sc_kpm import ScAgentClassic, ScResult
 from sc_kpm.sc_sets import ScSet
@@ -123,6 +123,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             #---------------CHECK-----------------------------------------------
             self.logger.info('CHECK POINT №1')
             self.logger.info(f"Entity node valid: {entity_node.is_valid()}")
+            self.logger.info(f"Entity type: {get_elements_types(entity_node)}")
             self.logger.info(f"Message type sys idtf: {get_element_system_identifier(message_type_node)}")
             self.logger.info(f"Message sys idtf: {message_node.is_valid()}")
             #-------------------------------------------------------------------
@@ -195,7 +196,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             #-------------------------------------------------------------------------------
             # Ищем все параметры для энтити из темплейта для энтити
             entity=ScKeynodes.resolve(
-                    "entity", sc_type.CONST_NODE) # ??????
+                    "entity", sc_type.CONST_NODE)
             _param="_param"
             _nrel_param="_nrel_param"
 
@@ -211,7 +212,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
                 sc_type.VAR_NODE_NON_ROLE >> _nrel_param
             )
             get_params_names_temp.quintuple(
-                sc_type.VAR_NODE >> "_some_entity",
+                entity,
                 sc_type.VAR_COMMON_ARC,
                 _param,
                 sc_type.VAR_PERM_POS_ARC,
