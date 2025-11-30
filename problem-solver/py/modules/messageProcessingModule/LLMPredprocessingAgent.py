@@ -17,7 +17,7 @@ from sc_kpm.utils import (
     get_element_system_identifier,
     generate_non_role_relation,
     generate_node,
-    generate_links
+    generate_link
 )
 from sc_kpm.utils.action_utils import (
      generate_action_result,
@@ -38,7 +38,9 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s | %(name)s | %(message)s", datefmt="[%d-%b-%y %H:%M:%S]"
 )
 
-
+load_dotenv()
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+os.environ["GOOGLE_API_KEY"] = gemini_api_key
 
 
 class LLMPredprocessingAgent(ScAgentClassic):
@@ -80,19 +82,19 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_message_temp.quintuple(
                 action_node,
                 sc_type.VAR_PERM_POS_ARC,
-                sc_type.VAR_NODE>>_message_node,
+                sc_type.VAR_NODE >> _message_node,
                 sc_type.VAR_PERM_POS_ARC,
                 rrel_1,
             )
             get_message_temp.quintuple(
                 _message_node,
                 sc_type.VAR_PERM_POS_ARC,
-                _entity_node,
+                sc_type.VAR_NODE >> _entity_node,
                 sc_type.VAR_PERM_POS_ARC,
                 rrel_entity,
             )
             get_message_temp.quintuple(
-                _some_node,
+                sc_type.VAR_NODE >> _some_node,
                 sc_type.VAR_COMMON_ARC,
                 _message_node,
                 sc_type.VAR_PERM_POS_ARC,
@@ -101,10 +103,10 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_message_temp.triple(
                 _some_node,
                 sc_type.VAR_PERM_POS_ARC,
-                _question,
+                sc_type.VAR_NODE_LINK >> _question,
             )        
             get_message_temp.triple(
-                _message_type_node,
+                sc_type.VAR_NODE_CLASS >> _message_type_node,
                 sc_type.VAR_PERM_POS_ARC,
                 _message_node,
             )
@@ -120,8 +122,9 @@ class LLMPredprocessingAgent(ScAgentClassic):
             question=search_result_get_message.get(_question)
             #---------------CHECK-----------------------------------------------
             self.logger.info('CHECK POINT №1')
-            self.logger.info(get_element_system_identifier(entity_node))
-            self.logger.info(get_element_system_identifier(message_type_node))
+            self.logger.info(f"Entity node valid: {entity_node.is_valid()}")
+            self.logger.info(f"Message type sys idtf: {get_element_system_identifier(message_type_node)}")
+            self.logger.info(f"Message sys idtf: {message_node.is_valid()}")
             #-------------------------------------------------------------------
             # Ищем джейсончики и всякие темплейтики омлетики
             rrel_entity_template = ScKeynodes.resolve(
@@ -166,7 +169,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_llm_templates_temp.quintuple(
                 _tuple_node,
                 sc_type.VAR_PERM_POS_ARC,
-                sc_type.VAR_NODE_LINK >>  _input_json,
+                sc_type.VAR_NODE_LINK >> _input_json,
                 sc_type.VAR_PERM_POS_ARC,
                 rrel_input_json,
             )
@@ -192,7 +195,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             #-------------------------------------------------------------------------------
             # Ищем все параметры для энтити из темплейта для энтити
             entity=ScKeynodes.resolve(
-                    "entity", sc_type.CONST_NODE)
+                    "entity", sc_type.CONST_NODE) # ??????
             _param="_param"
             _nrel_param="_nrel_param"
 
@@ -200,15 +203,15 @@ class LLMPredprocessingAgent(ScAgentClassic):
             get_params_names_temp.triple(
                 entity_template,
                 sc_type.VAR_PERM_POS_ARC,
-                _param
+                sc_type.VAR_NODE >> _param
             )
             get_params_names_temp.triple(
                 entity_template,
                 sc_type.VAR_PERM_POS_ARC,
-                _nrel_param
+                sc_type.VAR_NODE_NON_ROLE >> _nrel_param
             )
             get_params_names_temp.quintuple(
-                entity,
+                sc_type.VAR_NODE >> "_some_entity",
                 sc_type.VAR_COMMON_ARC,
                 _param,
                 sc_type.VAR_PERM_POS_ARC,
@@ -239,7 +242,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
                 get_entity_params_template.quintuple(
                     entity_node,
                     sc_type.VAR_COMMON_ARC,
-                    _answer,
+                    sc_type.VAR_NODE_LINK >> _answer,
                     sc_type.VAR_PERM_POS_ARC,
                     nrel_param
                 )
@@ -253,8 +256,8 @@ class LLMPredprocessingAgent(ScAgentClassic):
             #---------------CHECK----------------------------------------------------------
             # отдаем джейсончики в модель
             self.logger.info('CHECK POINT №5')
-            output_json_dict = self.get_llm_answer(json_template=prompt_json, json_input=input_json_str)
-            self.logger(f"Output from LLM: {output_json_dict}")
+            output_json_dict = self.get_llm_answer(json_template=json.loads(prompt_json), json_input=input_json_str)
+            self.logger.info(f"Output from LLM: {output_json_dict}")
             # находим новые значения параметров
             diff_params = self.find_new_params(input_json_dict, output_json_dict)
             
@@ -265,7 +268,7 @@ class LLMPredprocessingAgent(ScAgentClassic):
             
             #---------------CHECK----------------------------------------------------------
             # достаем ответ
-            self.logger.info('CHECK POINT №6')
+            self.logger.info('CHECK POINT №7')
             answer_txt = output_json_dict["answer"]
             # формируем reply_message и присоединяем все к исходной структуре 
             reply_node = self.add_answer_to_result(message_node, answer_txt)
@@ -294,65 +297,75 @@ class LLMPredprocessingAgent(ScAgentClassic):
             json_template,
             method="json_schema",
         )
-        # ответ json -> dict
-        response = json.loads(model_with_structure.invoke(f"""Please complite provided JSON, don't change the fields that are not None: \n 
-                 {json_input}"""))
+        # ответ -> dict
+        response = model_with_structure.invoke(f"""Please complite provided JSON, don't change the fields that are not None: \n 
+                 {json_input}""")
         return response
     
     def find_new_params(self, json_input: dict, json_output: dict) -> dict:
         '''Получение новых параметров путем сравнение input и output json'''
         diff = {}
-        if json_output.keys() == json_input.keys():
+        self.logger.info(f"json_output.keys() == json_input.keys(): {sorted(json_output.keys()) == sorted(json_input.keys())}")
+        if sorted(json_output.keys()) == sorted(json_input.keys()):
             for v1, v2 in zip(sorted(json_input.items()), sorted(json_output.items())):
                 if v1 != v2:
-                    self.logger.debug(f"Different field: {v1} and {v2}")
+                    self.logger.info(f"Different field: {v1} and {v2}")
                     diff[v1[0]] = v2[1]
+        self.logger.info(f"Difference: {diff}")
         return diff
     
     def add_new_params_to_kb(self, new_params: dict, entity_node: ScAddr):
-        new_links = generate_links(new_params.values(), ScLinkContentType.STRING, sc_type.CONST_NODE_LINK)
-        for link, key in zip(new_links, new_params.keys()):
-            nrel = generate_non_role_relation(entity_node, link, generate_node(sc_type.CONST_NODE_NON_ROLE, key))
+        new_links = []
+        for value in list(new_params.values()):
+            new_links.append(generate_link(value, ScLinkContentType.STRING, sc_type.CONST_NODE_LINK))
+        self.logger.info(f"zip(new_links, list(new_params.keys())): {zip(new_links, list(new_params.keys()))}")
+        for link, key in zip(new_links, list(new_params.keys())):
+            nrel = generate_non_role_relation(entity_node, link, ScKeynodes.resolve(key, sc_type.CONST_NODE_NON_ROLE))
         self.logger.info(f"New params are linked to an entity")
 
     def add_answer_to_result(self, message_addr: ScAddr, answer_text: str):
         # generate answer text link
         answer_link = generate_link(answer_text, ScLinkContentType.STRING, sc_type.CONST_NODE_LINK)
-        answer_link_node = generate_node(sc_type.NODE)
+        answer_link_node = generate_node(sc_type.CONST_NODE)
         # resolve or create all necessary nodes 
         nrel_reply_node = ScKeynodes.resolve("nrel_reply", sc_type.CONST_NODE_NON_ROLE)
+        self.logger.info(f"nrel_reply node is valid: {nrel_reply_node.is_valid()}")
         text_translation_node = ScKeynodes.resolve("nrel_sc_text_translation", sc_type.CONST_NODE_NON_ROLE)
-        reply_message_node = ScKeynodes.resolve("reply_message", sc_type.NODE)
+        self.logger.info(f"nrel_sc_text_translation is valid: {text_translation_node.is_valid()}")
+        reply_message_node = generate_node(sc_type.CONST_NODE)
         
-        answer_template = ScTemplate()
-        answer_template.triple(
-            sc_type.VAR_NODE >> "_link_node",
-            sc_type.VAR_TEMP_POS_ARC,
-            sc_type.VAR_NODE_LINK >> "_link"
+        generate_non_role_relation(message_addr, reply_message_node, nrel_reply_node)
+        generate_non_role_relation(answer_link_node, reply_message_node, text_translation_node)
+        generate_connector(sc_type.CONST_PERM_POS_ARC, answer_link_node, answer_link)
+        # answer_template = ScTemplate()
+        # answer_template.triple(
+        #     sc_type.VAR_NODE >> "_link_node",
+        #     sc_type.VAR_TEMP_POS_ARC,
+        #     sc_type.VAR_NODE_LINK >> "_link"
 
-        )
-        answer_template.quintuple(
-            "_link_node",
-            sc_type.VAR_COMMON_ARC,
-            sc_type.VAR_NODE >> "_reply_node",
-            sc_type.VAR_PERM_POS_ARC,
-            sc_type.VAR_NODE_NON_ROLE >> "_nrel_sc_text_translation"
-        )
-        answer_template.quintuple(
-            message_addr,
-            sc_type.VAR_COMMON_ARC,
-            "_reply_node",
-            sc_type.VAR_TEMP_POS_ARC,
-            sc_type.VAR_NODE_NON_ROLE >> "_nrel_reply"
-        )
+        # )
+        # answer_template.quintuple(
+        #     "_link_node",
+        #     sc_type.VAR_COMMON_ARC,
+        #     sc_type.VAR_NODE >> "_reply_node",
+        #     sc_type.VAR_PERM_POS_ARC,
+        #     sc_type.VAR_NODE_NON_ROLE >> "_nrel_sc_text_translation"
+        # )
+        # answer_template.quintuple(
+        #     message_addr,
+        #     sc_type.VAR_COMMON_ARC,
+        #     "_reply_node",
+        #     sc_type.VAR_TEMP_POS_ARC,
+        #     sc_type.VAR_NODE_NON_ROLE >> "_nrel_reply"
+        # )
         
-        params = {"_link": answer_link,
-                  "_link_node": answer_link_node,
-                  "_reply_node": reply_message_node,
-                  "_nrel_reply": nrel_reply_node,
-                  "_nrel_sc_text_translation": text_translation_node}
-        results = generate_by_template(answer_template, params)
-        self.logger.info(f"Result message is formed: {results}")
+        # params = {"_link": answer_link,
+        #           "_link_node": answer_link_node,
+        #           "_reply_node": reply_message_node,
+        #           "_nrel_reply": nrel_reply_node,
+        #           "_nrel_sc_text_translation": text_translation_node}
+        # results = generate_by_template(answer_template, params)
+        self.logger.info(f"Result message is formed")
         return reply_message_node
     
     

@@ -144,19 +144,49 @@
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="2505899271936" parent="0" x="407" y="455" haveBus="false" idtf_pos="0">
-            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{ question: None,
-   entity:None,
-   nrel_main_idtf: None,
-   nrel_temperature: None,
-   answer:None,
+            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{ question: None,
+
+
+
+   entity:None,
+
+
+
+   nrel_main_idtf: None,
+
+
+
+   nrel_temperature: None,
+
+
+
+   answer:None,
+
+
+
 }]]></content>
         </node>
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="2505899267152" parent="0" x="1165.5" y="397.5" haveBus="false" idtf_pos="0">
-            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{ question: None,
-   entity:None,
-   nrel_main_idtf: None,
-   nrel_wiki_link: None,
-   answer:None,
+            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{ question: None,
+
+
+
+   entity:None,
+
+
+
+   nrel_main_idtf: None,
+
+
+
+   nrel_wiki_link: None,
+
+
+
+   answer:None,
+
+
+
 }]]></content>
         </node>
         <node type="node/const/perm/relation" idtf="nrel_llm_template" shapeColor="0" id="2505899266320" parent="0" left="0" top="0" right="110" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="-13" y="492" haveBus="false" idtf_pos="0">

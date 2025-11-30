@@ -70,14 +70,30 @@
             </points>
         </contour>
         <node type="node/const/perm/general" idtf="" shapeColor="193" id="2358927848080" parent="0" x="984.769" y="-287.677" haveBus="false" idtf_pos="0">
-            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{
-    "question": None,
-    "entity": None,
-    "question_type": None,
-    "nrel_main_idtf": None,
-    "definition": None,
-    "answer": None
-}
+            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{
+
+
+    "question": None,
+
+
+    "entity": None,
+
+
+    "question_type": None,
+
+
+    "nrel_main_idtf": None,
+
+
+    "nrel_definition": None,
+
+
+    "answer": None
+
+
+}
+
+
 ]]></content>
         </node>
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="2358928774448" parent="0" x="1633.85" y="862.882" haveBus="false" idtf_pos="0">
@@ -141,7 +157,7 @@
 
     },
 
-    "required": ("question", "entity", "nrel_main_idtf", "nrel_definition", "answer")
+    "required": ("question", "entity", "question_type", "nrel_main_idtf", "nrel_definition", "answer")
 
             }
 
@@ -183,14 +199,30 @@
 ]]></content>
         </node>
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="2358927847872" parent="0" x="-108.335" y="-162.984" haveBus="false" idtf_pos="0">
-            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{
-    "question": None,
-    "entity": None,
-    "question_type": None,
-    "nrel_main_idtf": None,
-    "nrel_mechanism": None,
-    "answer": None
-}
+            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{
+
+
+    "question": None,
+
+
+    "entity": None,
+
+
+    "question_type": None,
+
+
+    "nrel_main_idtf": None,
+
+
+    "nrel_mechanism": None,
+
+
+    "answer": None
+
+
+}
+
+
 ]]></content>
         </node>
         <node type="node/const/perm/role" idtf="rrel_entity_template" shapeColor="0" id="2358927851824" parent="0" left="0" top="0" right="121" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="770.393" y="333.561" haveBus="false" idtf_pos="1">
