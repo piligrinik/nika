@@ -234,23 +234,33 @@ class LLMPredprocessingAgent(ScAgentClassic):
                 #-------------------------------------------------------------------------------
 
             input_json_dict['question']=get_link_content_data(question)
-            input_json_dict['entity']=get_element_system_identifier(entity_node)
+            some_link = generate_link(" ")
+            if get_elements_types(some_link) == get_elements_types(entity_node):
+                self.logger.info("Entity type is link")
+                input_json_dict['entity']=get_link_content_data(entity_node)
+            else:
+                self.logger.info("Entity type is NOT link")
+                input_json_dict['entity']=get_element_system_identifier(entity_node)
 
             # Ищем значения в БЗ и подставляем что есть
             for nrel_param in nrel_params:
                 get_entity_params_template=ScTemplate()
                 _answer="_answer"
+                self.logger.info(entity_node)
                 get_entity_params_template.quintuple(
                     entity_node,
                     sc_type.VAR_COMMON_ARC,
-                    sc_type.VAR_NODE_LINK >> _answer,
+                    _answer,
                     sc_type.VAR_PERM_POS_ARC,
                     nrel_param
                 )
                 result=search_by_template(get_entity_params_template)
                 if result:
+                    self.logger.info(f"Nrel value found for {nrel_param}: {result[0]}")
                     answer=result[0].get(_answer)
                     input_json_dict[get_element_system_identifier(nrel_param)]=get_link_content_data(answer)
+                else:
+                    self.logger.info(f"Nrel value not found for {nrel_param}")
             self.logger.info('CHECK POINT №4')
             self.logger.info(input_json_dict)
             input_json_str=self.dict_to_str(input_json_dict) # !!!!!!!!!!!!!!!!!!!!ИНПУТОВЫЙ ДЖЕЙСОН УЖЕ В СТРОКОВОМ ВИДЕ

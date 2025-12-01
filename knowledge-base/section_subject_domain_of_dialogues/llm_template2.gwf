@@ -7,7 +7,7 @@
         <node type="node/const/perm/general" idtf="def" shapeColor="0" id="2358926994464" parent="2358924669824" left="0" top="0" right="27" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="967.515" y="645.564" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
-        <node type="node/const/perm/general" idtf="entity2" shapeColor="0" id="2358924655648" parent="2358924669824" left="0" top="0" right="46" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="965.862" y="472.424" haveBus="false" idtf_pos="0">
+        <node type="node/const/perm/general" idtf="entity" shapeColor="0" id="2358924655648" parent="2358924669824" left="0" top="0" right="46" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="965.862" y="472.424" haveBus="false" idtf_pos="0">
             <content type="0" mime_type="" content_visibility="false" file_name=""/>
         </node>
         <node type="node/const/perm/relation" idtf="nrel_main_idtf" shapeColor="0" id="2358924657312" parent="2358924669824" left="0" top="0" right="93" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="875.362" y="522.419" haveBus="false" idtf_pos="1">
