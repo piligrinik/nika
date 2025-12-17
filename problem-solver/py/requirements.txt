@@ -4,3 +4,4 @@ requests==2.32.5
 langchain
 langchain-google-genai
 dotenv
+deep_translator

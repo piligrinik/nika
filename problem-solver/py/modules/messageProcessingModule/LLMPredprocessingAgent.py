@@ -326,18 +326,18 @@ class LLMPredprocessingAgent(ScAgentClassic):
             method="json_schema",
         )
         # ответ -> dict
-        response = model_with_structure.invoke(f"""Please complite provided JSON, don't change the fields that are not None: \n 
+        response = model_with_structure.invoke(f"""Please complite provided JSON in Russian language, don't change the fields that are not None: \n 
                  {json_input}""")
         return response
     
     def find_new_params(self, json_input: dict, json_output: dict) -> dict:
-        '''Получение новых параметров путем сравнение input и output json'''
+        '''Получение новых параметров'''
         diff = {}
         self.logger.info(f"json_output.keys() == json_input.keys(): {sorted(json_output.keys()) == sorted(json_input.keys())}")
         if sorted(json_output.keys()) == sorted(json_input.keys()):
             for v1, v2 in zip(sorted(json_input.items()), sorted(json_output.items())):
-                if v1 != v2:
-                    self.logger.info(f"Different field: {v1} and {v2}")
+                if "nrel" in v1[0] and v1[1] == None:
+                    self.logger.info(f"Empty field: {v1}")
                     diff[v1[0]] = v2[1]
         self.logger.info(f"Difference: {diff}")
         return diff

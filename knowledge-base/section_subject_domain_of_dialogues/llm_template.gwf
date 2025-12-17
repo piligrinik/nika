@@ -72,36 +72,36 @@
             </points>
         </contour>
         <node type="node/const/perm/general" idtf="" shapeColor="0" id="2505899272352" parent="0" x="147" y="-447" haveBus="false" idtf_pos="0">
-            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{ 'title': 'Question about the weather',
-                'description': 'A question about the weather in a specific locality and the answer in human format.',
-                'type': 'object',
-                'properties': {
-                    'question': {
-                        'type': 'string',
-                        'description': 'The question about the weather  in a specific locality, will always be mentioned in human question.'
+            <content type="1" mime_type="content/term" content_visibility="true" file_name=""><![CDATA[{ "title": "Question about the weather",
+                "description": "A question about the weather in a specific locality and the answer in human format.",
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "description": "The question about the weather  in a specific locality, will always be mentioned in human question."
                     },
-                    'entity': {
-                        'type': 'string',
-                        'description': 'Locality that the question is about.'
+                    "entity": {
+                        "type": "string",
+                        "description": "Locality that the question is about."
                     },
-                    'question_type': {
-                        'type': 'string',
-                        'description': 'Type of the question. Ex: about_entity, about_weather.'
+                    "question_type": {
+                        "type": "string",
+                        "description": "Type of the question. Ex: about_entity, about_weather."
                     },
-                    'nrel_main_idtf': {
-                        'type': 'string',
-                        'description': 'Identifier of the entity in the initial form (with a capital letter).'
+                    "nrel_main_idtf": {
+                        "type": "string",
+                        "description": "Identifier of the entity in the initial form (with a capital letter)."
                     },
-                   'nrel_temperature': {
-                        'type': 'string',
-                        'description': 'Сurrent temperature in this locality'
+                   "nrel_temperature": {
+                        "type": "string",
+                        "description": "Сurrent temperature in this locality"
                     },
-                    'answer': {
-                        'type': 'string',
-                        'description': 'An answer to human question in a natural language.'
+                    "answer": {
+                        "type": "string",
+                        "description": "An answer to human question in a natural language."
                     }
                 },
-                'required': ('question', 'entity', 'nrel_main_idtf', 'nrel_temperature', 'answer')
+                "required": ("question", "entity", "nrel_main_idtf", "nrel_temperature", "answer")
             }]]></content>
         </node>
         <node type="node/const/perm/group" idtf="concept_message_about_wiki_link" shapeColor="0" id="2505899889568" parent="0" left="0" top="0" right="203" bottom="25" textColor="164" text_angle="0" text_font="Times New Roman" font_size="10" x="752.5" y="512.5" haveBus="false" idtf_pos="1">
